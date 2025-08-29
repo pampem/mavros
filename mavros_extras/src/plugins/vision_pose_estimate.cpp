@@ -53,6 +53,7 @@ public:
     tf_rate(10.0)
   {
     enable_node_watch_parameters();
+    auto qos = rclcpp::QoS(rclcpp::KeepLast(10)).best_effort();
 
     // tf params
     node_declare_and_watch_parameter(
@@ -66,10 +67,10 @@ public:
           tf2_start("VisionPoseTF", &VisionPoseEstimatePlugin::transform_cb);
         } else {
           vision_sub = node->create_subscription<geometry_msgs::msg::PoseStamped>(
-            "~/pose", 10, std::bind(
+            "~/pose", qos, std::bind(
               &VisionPoseEstimatePlugin::vision_cb, this, _1));
           vision_cov_sub = node->create_subscription<geometry_msgs::msg::PoseWithCovarianceStamped>(
-            "~/pose_cov", 10, std::bind(
+            "~/pose_cov", qos, std::bind(
               &VisionPoseEstimatePlugin::vision_cov_cb, this, _1));
         }
       });
